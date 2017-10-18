@@ -1,1 +1,29 @@
+什么是spring框架
+spring是J2EE应用程序框架，是轻量级的IoC和AOP的容器框架，主要是针对javaBean的生命周期进行管理的轻量级容器，可以单独使用，也可以和Struts框架，
+ibatis框架等组合使用。
+
+Spring 框架概述 
+1.1. 什么是Spring 
+Spring是分层的JavaSE/EE full-stack(一站式) 轻量级开源框架 
+分层： 来自JavaEE体系结构 （客户端层、 web层、业务层、持久层 ） 服务器端三层结构 （web层、业务层、持久层） 
+
+Servlet + JSP —- web层技术 —- Struts2框架 
+JDBC 接口 —- 持久化技术 —- Hibernate框架 
+EJB 框架（复杂） —- 业务层技术 —- Spring 框架 （取代EJB出现 ）
+
+Spring 出现，就是为了解决常见JavaEE 企业开发问题 ！ 
+一站式： Spring框架提供了 web层（表现层） SpringMVC、 业务层 IoC、AOP和事务管理、 持久层JdbcTemplate 各层javaEE软件开发解决方案 
+轻量级：相对于EJB框架而言
+
+Spring核心------ IoC： 控制反转  AOP： 面向切面编程 
+
+Spring 给软件开发带来了什么 
+方便解耦，简化开发 （Spring IoC特性） 
+AOP编程的支持 
+声明式事务的支持 
+方便程序的测试 
+方便集成各种优秀框架 （整合Struts2 、 Hibernate 、MyBatis 、Struts1 ） 
+降低JavaEE API的使用难度 （Spring 提供大量工具类， 简化代码编写 ）
+
+
 
