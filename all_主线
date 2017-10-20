@@ -13,7 +13,8 @@ hashmap
 jvm垃圾回收；
 jvm性能调优
 java spring框架（ioc aop）
-java 代理  以及反射
+java 代理  （1.静态代理 2.动态代理 3.Cglib代理）
+以及反射
 
 机器linux性能调优：
 top
