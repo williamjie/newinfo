@@ -15,6 +15,11 @@ jvm性能调优
 java spring框架（ioc aop）
 java 代理  以及反射
 
+机器linux性能调优：
+top
+iostat
+free
+
 
 存储
 oracle
