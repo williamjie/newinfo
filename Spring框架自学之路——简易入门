@@ -1,0 +1,803 @@
+Spring框架自学之路——简易入门
+原创 2017年06月01日 00:02:22 标签：spring /bean /IoC 2303
+目录
+
+目录
+介绍
+Spring中的IoC操作
+IoC入门案例
+Spring的bean管理配置文件
+Bean实例化的方式
+Bean标签的常用属性
+属性注入
+使用有参构造函数注入属性
+使用set方法注入属性
+注入对象类型属性
+p名称空间注入属性
+注入复杂类型属性
+IoC和DI的区别
+Spring的bean管理注解
+Spring注解开发准备
+注解创建对象
+注解注入属性
+介绍
+
+　　Spring框架是个轻量级的Java EE框架。所谓轻量级，是指不依赖于容器就能运行的。Struts、Hibernate也是轻量级的。 
+　　轻量级框架是相对于重量级框架而言的，重量级框架必须依赖特定的容器，例如EJB框架就必须运行在Glassfish、JBoss等支持EJB的容器中，而不能运行在Tomcat中。——《Java Web整合开发 王者归来》 
+　　Spring以IoC、AOP为主要思想，其中IoC，Inversion of Control 指控制反转或反向控制。在Spring框架中我们通过配置创建类对象，由Spring在运行阶段实例化、组装对象。AOP，Aspect Oriented Programming，面向切面编程，其思想是在执行某些代码前执行另外的代码，使程序更灵活、扩展性更好，可以随便地添加、删除某些功能。Servlet中的Filter便是一种AOP思想的实现。 
+　　Spring同时也是一个“一站式”框架，即Spring在JavaEE的三层架构[表现层（Web层）、业务逻辑层（Service层）、数据访问层（DAO层）]中，每一层均提供了不同的解决技术。如下：
+
+表现层（Web层）：Spring MVC
+业务逻辑层（Service层）：Spring的IoC
+数据访问层（DAO层）：Spring的jdbcTemplate
+Spring中的IoC操作
+
+　　将对象的创建交由Spring框架进行管理。 
+　　IoC操作分为：IoC配置文件方式和IoC的注解方式。
+
+IoC入门案例
+
+（1）导入Spring框架中的相关jar包，这里只导入Spring的Core模块下的jar包（Core模块是框架的核心类库），以及 支持日志输出的 commons-logging 和 log4j 的jar包； 
+（2）创建一个普通的Java类，并在该类中创建方法，如下： 
+　　User.java
+
+package com.wm103.ioc;
+
+public class User {
+    public void add() {
+        System.out.println("add...");
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+（3）创建Spring的配置文件，进行Bean的配置 
+　　Spring的核心配置文件名称和位置不是固定的。但官方件建议将该核心配置文件放在src目录下，且命名为 applicationContext.xml。 
+　　这里为了方便，将核心配置文件放在src目录下，并命名为 bean1.xml，内容如下：
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="user" class="com.wm103.ioc.User"></bean>
+</beans>
+1
+2
+3
+4
+5
+6
+（４）编写测试类进行测试，通过配置文件创建类对象 
+　　TestIoC.java
+
+package com.wm103.ioc;
+
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+/**
+ * Created by DreamBoy on 2017/5/31.
+ */
+public class TestIoC {
+    @Test
+    public void testUser() {
+        // 1. 加载Spring配置文件，根据创建对象
+        ApplicationContext context = new ClassPathXmlApplicationContext("bean1.xml");
+        // 2. 得到配置创建的对象
+        User user = (User) context.getBean("user");
+        System.out.println(user);
+        user.add();
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+Spring的bean管理（配置文件）
+
+Bean实例化的方式
+
+　　在Spring中通过配置文件创建对象。 
+　　Bean实例化三种方式实现： 
+（1）使用类的无参数构造创建，如：
+
+<!-- 等同于 user = new com.wm103.ioc.User(); -->
+<bean id="user" class="com.wm103.ioc.User"></bean>
+1
+2
+（2）使用静态工厂创建 
+　　如果一个Bean不能通过new直接实例化，而是通过工厂类的某个静态方法创建的，需要把<bean>的class属性配置为工厂类。如：
+
+<!-- 等同于 user = com.wm103.ioc.UserFactory.createInstance(); -->
+<bean id="user" class="com.wm103.ioc.UserFactory" factory-method="createInstance"></bean>
+1
+2
+（3）使用实例工厂创建 
+　　如果一个Bean不能通过new直接实例化，而是通过工厂类的某个实例方法创建的，需要先配置工厂的<bean>标签，然后在需要创建的对象的bean标签的factory-bean属性配置为工厂类对象，factory-method属性配置为产生实例的方法。如：
+
+<!-- 等同于 userFactory = new com.wm103.ioc.UserFactory(); -->
+    <bean id="userFactory" class="com.wm103.ioc.UserFactory"></bean>
+    <!-- 等同于 user = userFactory.createInstance(); -->
+    <bean id="user" factory-bean="userFactory" factory-method="createInstance"></bean>
+1
+2
+3
+4
+Bean标签的常用属性
+
+（1）id属性：用于指定配置对象的名称，不能包含特殊符号。 
+（2）class属性：创建对象所在类的全路径。 
+（3）name属性：功能同id属性一致。但是在name属性值中可以包含特殊符号。 
+（4）scope属性
+
+singleton：默认值，单例 
+单例模式下，在程序下只有一个实例。非单态模式下，每次请求该Bean，都会生成一个新的对象。
+prototype：多例
+request：创建对象后将对象存放到request域
+session：创建对象后将对象存放到session域
+globalSession：创建对象后将对象存放到globalSession域
+属性注入
+
+　　属性注入指创建对象时，向类对象的属性设置属性值。 
+　　在Spring框架中支持set方法注入和有参构造函数注入，即创建对象后通过set方法设置属性或采用有参构造函数创建对象并初始化属性。
+
+使用有参构造函数注入属性
+
+　　案例： 
+　　Demo1.java 提供有参的构造方法
+
+package com.wm103.ioc;
+public class Demo1 {
+    private String demoName;
+
+    public Demo1(String demoName) {
+        this.demoName = demoName;
+    }
+
+    public void out() {
+        System.out.println("This is Demo1.");
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+　　bean的配置：
+
+    <bean id="demo1" class="com.wm103.ioc.Demo1">
+        <constructor-arg name="demoName" value="Demo1"></constructor-arg>
+    </bean>
+1
+2
+3
+　　创建Demo1对象进行测试：
+
+@Test
+public void testDemo1() {
+    // 1. 加载Spring配置文件，根据创建对象
+    ApplicationContext context = new ClassPathXmlApplicationContext("bean1.xml");
+    // 2. 得到配置创建的对象
+    Demo1 demo1 = (Demo1) context.getBean("demo1");
+    System.out.println(demo1);
+    demo1.out();
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+使用set方法注入属性
+
+　　案例： 
+　　Demo2.java 提供属性的set方法
+
+package com.wm103.ioc;
+public class Demo2 {
+    private String demoName;
+
+    public void setDemoName(String demoName) {
+        this.demoName = demoName;
+    }
+
+    public void out() {
+        System.out.println("This is Demo2.");
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+　　bean的配置：
+
+    <bean id="demo2" class="com.wm103.ioc.Demo2">
+        <property name="demoName" value="Demo2"></property>
+    </bean>
+1
+2
+3
+　　创建Demo2对象进行测试：
+
+@Test
+public void testDemo2() {
+    // 1. 加载Spring配置文件，根据创建对象
+    ApplicationContext context = new ClassPathXmlApplicationContext("bean1.xml");
+    // 2. 得到配置创建的对象
+    Demo2 demo2 = (Demo2) context.getBean("demo2");
+    System.out.println(demo2);
+    demo2.out();
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+注入对象类型属性
+
+　　以三层架构中的service层和dao层为例，为了让service层使用dao层的类创建的对象，需要将dao对象注入到service层类中。具体实现过程中如下： 
+（1）创建service类、dao层接口、dao类，如下： 
+UserService.java
+
+package com.wm103.ioc;
+public class UserService {
+    private UserDao userDao; // 声明为接口类型，降低service层与dao层的耦合度，不依赖于dao层的具体实现
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void add() {
+        System.out.println("service add...");
+        this.userDao.add();
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+UserDao.java
+
+package com.wm103.ioc;
+
+/**
+ * 暴露给service层的接口
+ * Created by DreamBoy on 2017/5/31.
+ */
+public interface UserDao {
+    void add();
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+UserDaoImpl.java
+
+package com.wm103.ioc;
+
+/**
+* 接口的具体实现
+ * Created by DreamBoy on 2017/5/31.
+ */
+public class UserDaoImpl implements UserDao {
+    @Override
+    public void add() {
+        System.out.println("dao add...");
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+（2）在配置文件中注入关系，如下：
+
+    <!-- 配置service和dao对象 -->
+    <!-- 因为service依赖于dao，所以先进行dao对象的bean配置 -->
+    <bean id="userDao" class="com.wm103.ioc.UserDaoImpl"></bean>
+    <bean id="userService" class="com.wm103.ioc.UserService">
+        <!--
+            注入dao对象
+            name属性值为：service中的某一属性名称
+            ref属性值为：被引用的对象对应的bean标签的id属性值
+         -->
+        <property name="userDao" ref="userDao"></property>
+    </bean>
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+（3）创建测试方法进行测试，如下：
+
+    @Test
+    public void testUserService() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("bean1.xml");
+        UserService userService = (UserService) context.getBean("userService");
+        System.out.println(userService);
+        userService.add();
+    }
+1
+2
+3
+4
+5
+6
+7
+p名称空间注入属性
+
+　　之前提到了一种set方法的属性注入方式，这里将介绍另一种属性注入的方式，名为 p名称空间注入。对比set方法的属性注入方式，核心配置文件配置修改如下：
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="demo2" class="com.wm103.ioc.Demo2" p:demoName="DEMO2"></bean>
+</beans>
+1
+2
+3
+4
+5
+6
+7
+注入复杂类型属性
+
+　　对象注入复杂类型属性，如数组、List、Map、Properties。 
+　　案例： 
+　　PropertyDemo.java
+
+package com.wm103.ioc;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+public class PropertyDemo {
+    private String[] arrs;
+    private List<String> list;
+    private Map<String, String> map;
+    private Properties properties;
+
+    public void setArrs(String[] arrs) {
+        this.arrs = arrs;
+    }
+
+    public void setList(List<String> list) {
+        this.list = list;
+    }
+
+    public void setMap(Map<String, String> map) {
+        this.map = map;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public String[] getArrs() {
+        return arrs;
+    }
+
+    public List<String> getList() {
+        return list;
+    }
+
+    public Map<String, String> getMap() {
+        return map;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+　　bean配置文件，内容如下：
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="pdemo" class="com.wm103.ioc.PropertyDemo">
+        <!-- 注入数组 -->
+        <property name="arrs">
+            <list>
+                <value>value 1 of array</value>
+                <value>value 2 of array</value>
+                <value>value 3 of array</value>
+            </list>
+        </property>
+        <!-- 注入List集合 -->
+        <property name="list">
+            <list>
+                <value>value 1 of list</value>
+                <value>value 2 of list</value>
+                <value>value 3 of list</value>
+            </list>
+        </property>
+        <!-- 注入Map集合 -->
+        <property name="map">
+            <map>
+                <entry key="key1" value="value 1 of map"></entry>
+                <entry key="key2" value="value 2 of map"></entry>
+                <entry key="key3" value="value 3 of map"></entry>
+            </map>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="username">root</prop>
+                <prop key="password">123</prop>
+            </props>
+        </property>
+    </bean>
+</beans>
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+IoC和DI的区别
+
+　　IoC，控制反转，把对象的创建交给Spring进行配置。 
+　　DI，依赖注入，向类的属性设置值。 
+　　IoC与DI的关系：依赖注入不能单独存在，需要在IoC基础之上完成操作。
+
+Spring的bean管理（注解）
+
+　　注解是代码中特殊的标记，使用注解可以完成特定的功能。注解可以使用在类、方法或属性上，写法如：@注解名称(属性名称=属性值)。 
+　　Spring的bean管理注解方式，案例如下。
+
+Spring注解开发准备
+
+（1）导入jar包：
+
+导入基本的jar包：commons-logging、log4j、spring-beans、spring-context、spring-core、spring-expression相关jar包。
+导入AOP的jar包：spring-aopjar包。
+（2）创建类、方法 
+　　User.java
+
+package com.wm103.anno;
+
+import org.springframework.stereotype.Component;
+
+public class User {
+    public void add() {
+        System.out.println("User Add...");
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+（3）创建Spring配置文件，引入约束；并开启注解扫描 
+　　bean1.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--
+        开启注解扫描
+            （1）到包中扫描类、方法、属性上是否有注解
+     -->
+    <context:component-scan base-package="com.wm103"></context:component-scan>
+
+    <!--
+            （2）扫描属性上的注解
+    -->
+    <!--<context:annotation-config></context:annotation-config>-->
+</beans>
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+注解创建对象
+
+　　在创建对象的类上面使用注解实现，如：
+
+@Component(value="user")
+public class User {
+1
+2
+　　创建测试类 TestAnno.java和测试方法，如：
+
+package com.wm103.anno;
+
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class TestAnno {
+
+    @Test
+    public void testUser() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("bean1.xml");
+        User user = (User) context.getBean("user");
+        System.out.println(user);
+        user.add();
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+　　除了上述提到的 @Component注解外，Spring中还提供了@Component的3个衍生注解，其功能就目前来说是一致的，均是为了创建对象。
+
+@Controller ：WEB层
+@Servlet ：业务层
+@Repository ：持久层
+
+　　以单例或多实例方式创建对象，默认为单例，多例对象设置注解如下：
+
+@Component(value="user")
+@Scope(value="prototype")
+public class User {
+1
+2
+3
+注解注入属性
+
+　　案例：创建Service类和Dao类，并在Service中注入Dao对象。如下： 
+（1）创建Dao和Service对象 
+　　UserDao.java
+
+package com.wm103.anno;
+
+import org.springframework.stereotype.Repository;
+
+@Repository(value="userDao")
+public class UserDao {
+    public void add() {
+        System.out.println("UserDao Add...");
+    }
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+　　UserService.java
+
+package com.wm103.anno;
+
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+
+@Service(value="userService")
+public class UserService {
+    public void add() {
+        System.out.println("UserService Add...");
+    }
+
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+（2）在Service类中定义UserDao类型的属性，并使用注解完成对象的注入 
+@Autowired
+
+@Autowired
+private UserDao userDao;
+1
+2
+或者 @Resource
+
+@Resource(name="userDao")
+private UserDao userDao;
+1
+2
+　　其中该注解的name属性值为注解创建Dao对象的value属性的值。 
+　　这两种注解方式都不要为需要注入的属性定义set方法。 
+（3）创建测试方法
+
+    @Test
+    public void testUserService() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("bean1.xml");
+        UserService userService = (UserService) context.getBean("userService");
+        System.out.println(userService);
+        userService.add();
+    }
+1
+2
+3
+4
+5
+6
+7
+注：配置文件和注解混合使用 
+1）创建对象的操作一般使用配置文件方式实现； 
+2）注入属性的操作一般使用注解方式实现。
