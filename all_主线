@@ -44,6 +44,7 @@ tcp三次握手以及四次挥手，tcp黏连出现解决
 UPD
 HTTP：
 http协议各个常用字段以及返回值意义
+http GET POST 区别
 
 架构
 前中后
