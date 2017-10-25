@@ -15,6 +15,8 @@ jvm性能调优
 java spring框架（ioc aop）
 java 代理  （1.静态代理 2.动态代理 3.Cglib代理）
 以及反射
+synchronized 关键词
+hashmap 结构
 
 机器linux性能调优：
 top
