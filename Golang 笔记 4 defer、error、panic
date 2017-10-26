@@ -1,0 +1,100 @@
+Golang 笔记 4 defer、error、panic
+一、defer语句
+  defer语句仅能被放置在函数或方法中。它由关键字defer和一个调用表达式组成。这里的表达式所表示的既不能是对Go语言内建函数的调用也不能是对Go语言标准库代码包unsafe中的那些函数的调用。实际上，满足上述条件的表达式被称为表达式语句。例：
+
+func readFile(path string) ([]byte, error) {
+    file,err != os.Open(path)
+    if err != nil {
+        return nil,err
+    }
+    defer file.Close()
+    return ioutil.ReadAll(file)
+}
+  函数readFile的功能是读取指定文件或目录本身的内容并将其返回，同时当有错误发生时立即向调用方报告。其中os和ioutil代表的都是Go语言标准库中的代码包。在打开文件且未发现有错误发生之后，紧跟了一条defer语句。其中携带的表达式语句表示的是对被打开文件的关闭操作。当这条defer语句被执行的时候，其中的这条表达式语句并不会被执行。它的确切的执行时机是在其所属的函数(这里是readFile)的执行即将结束的那个时刻。也就是说，在readFile函数真正结束执行的前一刻，file.Close()才会被执行。该语句可保证在readFile函数将结果返回给调用方之前，那个文件或目录一定会被关闭。
+  无论readFile函数正常返回还是发生了异常其中的file.Close()都会在该函数即将退出那一刻被执行。
+  当一个函数中存在多个defer语句时，会按出现顺序的倒序执行。例:
+
+func deferIt() {
+    defer func(){
+        fmt.Print(1)
+    }()
+    defer func() {
+        fmt.Print(2)
+    }()
+    defer func() {
+        fmt.Print(3)
+    }()
+    fmt.Print(4)
+}
+  deferIt()的输出结果是4321。
+  defer携带的表达式语句代表的是对某个函数或方法的调用。这个调用可能会有参数传入，比如:fmt.Print(i+1)。如果代表传入参数是一个表达式，那么在defer语句被执行的时候该表达式就会被求值了。这与被携带的表达式语句的执行时机是不同的。
+
+func deferIt3() {
+    f := func(i int) int {
+        fmt.Printf("%d", i)
+        return i * 10
+    }
+    for i := 1; i < 5; i++ {
+        defer fmt.Printf("%d", f(i))
+    }
+}
+  输出结果为1 2 3 4 40 30 20 10
+  如果defer携带的表达式代表的是对匿名函数的调用，那么我们就一定要非常警惕:
+
+funct deferIt4() {
+    for i := 1; i < 5; i++ {
+        defer func() {
+            fmt.Print(i)
+        }()
+    }
+}
+  此函数执行后会输出5555,而不是4321。原因是defer语句携带的表达式语句中的那个匿名函数包含了对外部的变量的使用。等待这个匿名函数要被执行的时候，包含该defer语句的那条for语句已经执行完毕了。此时的变量i的值已经变为5，因此该匿名函数只会打印5。正确的用法是：把要使用的外部变量作为参数传入到匿名函数中
+
+func deferIt4() {
+    for i := 1; i < 5; i++ {
+        defer func(n int) {
+            fmt.Print(n)
+        }()
+    }
+}
+二、Go语言错误处理 error
+  Go语言的函数可以一次返回多个结果。上一节中例子:
+
+func readFile(path string) ([]byte, errro) {
+    file, err := os.Open(path)
+    if err != nil {
+        return nil, err
+    }
+    defer file.Close()
+    return ioutil.ReadAll(file)
+}
+  函数readFile有两个结果声明。第二个结果声明的类型是error。error是Go语言内置的一个接口类型。它的声明如下：
+
+type error interface {
+    Error() string
+}
+  显然只要一个类型的方法集合包含了名为Error、无参数声明且仅声明了一个string类型的结果的方法，就相当实现了error接口。os.Open函数的第二个结果值的类型就是这样的。我们把它赋给了变量err。
+  在调用了os.Open函数并取得其结果之后，我们判断err是否为nil。如果答案不是则直接返回该错误。
+&nnbsp; readFile函数的最后一条语句是return，它把ioutil.ReadAll函数的调用结果直接作为readFile函数的结果返回。实际上，ioutil.ReadAll函数的结果声明列表与readFile的结果声明列表是一致的。
+  接下来说明一下如何创建错误：只需调用标准库代码包errors的New函数即可。例，可以在readFile函数的开始处加入这段代码可以在参数无效的时候告知调用方:
+
+if path == "" {
+    return nil, errors.New("The parameter is invalid!")
+}
+  Go语言标准库的代码包中有很多由errors.New函数创建出来的错误值。例:os.ErrPermission、io.EOF。我们可以方便的用操作符==来判断一个error类型的值与这些变量的值是否相等，从而来确定错误的具体类型。比如io.EOF，它代表读取方已无更多数据可读，我们在得到这个错误的时候不该把它看成一个错误而应该只去结束相应的读取操作。
+
+if err == io.EOF {
+    ...
+}
+三、Go语言异常处理 panic
+  可以把panic理解为异常。如果不显式的处理panic程序会崩溃。内建函数panic可以人为地产生一个异常。不过，这种致命错误可以被恢复。在Go中，内建函数recover可以做到这一点。
+  recocer函数必须要在defer语句中调用才有效。因为一旦有异常产生，当前函数以及在调用栈上的所有代码都会失去对流程的控制权。只有defer语句携带的函数中的代码才可以在异常时拦截到。例:
+
+defer func() {
+    if p := recover(); p != nil {
+        fmt.Printf("Fatal error: %s\n", p)
+    }
+}
+  recover函数会返回一个interface{}类型的值，interface{}代表空接口。Go中的任何类型都是它的实现类型。如果p不为nil那么就说明当前确有异常发生。这时我们要根据情况做相应处理。一旦defer语句中的recover函数调用被执行了，异常就会被恢复，不论我们是否进行了后续处理。我们一定不要只拦截不处理。
+  panic函数可接受一个interface{}类型的值作为其参数，即我们可以传任何类型的参数给panic。这里最好只传error类型的值。
+
