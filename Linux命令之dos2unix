@@ -1,0 +1,101 @@
+我使用过的Linux命令之dos2unix - 将DOS格式文本文件转换成UNIX格式
+
+本文链接：http://codingstandards.iteye.com/blog/810900   （转载请注明出处）
+用途说明
+dos2unix命令用来将DOS格式的文本文件转换成UNIX格式的（DOS/MAC to UNIX text file format converter）。DOS下的文本文件是以\r\n作为断行标志的，表示成十六进制就是0D 0A。而Unix下的文本文件是以\n作为断行标志的，表示成十六进制就是 0A。DOS格式的文本文件在Linux底下，用较低版本的vi打开时行尾会显示^M，而且很多命令都无法很好的处理这种格式的文件，如果是个shell脚本，。而Unix格式的文本文件在Windows下用Notepad打开时会拼在一起显示。因此产生了两种格式文件相互转换的需求，对应的将UNIX格式文本文件转成成DOS格式的是unix2dos命令。
+常用参数
+将DOS格式文本文件转换成Unix格式，最简单的用法就是dos2unix直接跟上文件名。
+格式：dos2unix file
+如果一次转换多个文件，把这些文件名直接跟在dos2unix之后。（注：也可以加上-o参数，也可以不加，效果一样）
+格式：dos2unix file1 file2 file3
+格式：dos2unix -o file1 file2 file3
+上面在转换时，都会直接在原来的文件上修改，如果想把转换的结果保存在别的文件，而源文件不变，则可以使用-n参数。
+格式：dos2unix oldfile newfile
+如果要保持文件时间戳不变，加上-k参数。所以上面几条命令都是可以加上-k参数来保持文件时间戳的。
+格式：dos2unix -k file
+格式：dos2unix -k file1 file2 file3
+格式：dos2unix -k -o file1 file2 file3
+格式：dos2unix -k -n oldfile newfile
+注：unix2dos命令的使用方式与dos2unix命令的类似。
+使用示例
+示例一 DOS格式文本文件在Linux下的表现
+现在有一个脚本文件job.sh，是在Linux下用vi编辑的。
+[root@jfht ~]# cat job.sh 
+#!/bin/sh
+
+date >job.txt
+ 
+现在把它转换成DOS格式文本文件。 
+[root@jfht ~]# unix2dos job.sh 
+unix2dos: converting file job.sh to DOS format ...
+尝试着运行一下。 
+[root@jfht ~]# ./job.sh 
+-bash: ./job.sh: 权限不够
+[root@jfht ~]# chmod +x job.sh 
+[root@jfht ~]# ./job.sh 
+-bash: ./job.sh: /bin/sh^M: bad interpreter: 没有那个文件或目录
+DOS格式的脚本文件时无法解释执行的，因为脚本文件的第一行是用来指定解释器的，Linux系统认为解释器是/bin/sh^M，而不是/bin/sh。
+我们来通过Linux下的一些命令来看一下DOS格式文件的真面目。 
+[root@jfht ~]# cat -v job.sh     <== cat -v可以看到文件中的非打印字符，而不带-v参数的cat命令不行。 
+#!/bin/sh^M
+^M
+date >job.txt^M
+^M
+[root@jfht ~]# hexdump -C job.sh       <== hexdump -C可以看到文件每个字节的十六进制表示。 
+00000000  23 21 2f 62 69 6e 2f 73  68 0d 0a 0d 0a 64 61 74  |#!/bin/sh....dat|
+00000010  65 20 3e 6a 6f 62 2e 74  78 74 0d 0a 0d 0a         |e >job.txt....|
+0000001e
+[root@jfht ~]# vi job.sh     <== 使用vi打开时可以看到底下有[dos]的格式提示。有些版本vi显示的是行尾为^M。 
+
+#!/bin/sh
+
+date >job.txt
+
+~                                                                                                                                   
+~              
+"job.sh" [dos ] 4L, 30C
+现在我们把DOS格式改回Unix格式的，看看效果。
+root@jfht ~]# dos2unix job.sh 
+dos2unix: converting file job.sh to UNIX format ...
+[root@jfht ~]# ./job.sh
+可以执行了，不再报“-bash: ./job.sh: /bin/sh^M: bad interpreter: 没有那个文件或目录”这个错了。 
+[root@jfht ~]#
+示例二 dos2unix -k和dos2unix -n的使用示例
+[root@jfht ~]# cat <<EOF >1.txt 
+> 1
+> 2
+
+> 3
+> EOF
+[root@jfht ~]# file 1.txt 
+1.txt: ASCII text
+[root@jfht ~]# ls -l 1.txt 
+-rw-r--r-- 1 root root 6 11-14 09:08 1.txt
+[root@jfht ~]# date 
+2010年 11月 14日 星期日 09:28:42 CST
+[root@jfht ~]# unix2dos -k 1.txt      <== 保持文件时间戳 
+unix2dos: converting file 1.txt to DOS format ...
+[root@jfht ~]# ls -l 1.txt 
+-rw-r--r-- 1 root root 9 11-14 09:08 1.txt
+[root@jfht ~]# dos2unix -n 1.txt 2.txt     <== 将1.txt转换到2.txt 
+dos2unix: converting file 1.txt to file 2.txt in UNIX format ...
+[root@jfht ~]# ls -l 1.txt 2.txt 
+-rw-r--r-- 1 root root 9 11-14 09:08 1.txt
+-rw-r--r-- 1 root root 6 11-14 09:30 2.txt
+[root@jfht ~]# file 1.txt 2.txt 
+1.txt: ASCII text, with CRLF line terminators
+2.txt: ASCII text
+[root@jfht ~]# cat -v 1.txt 
+1^M
+2^M
+3^M
+[root@jfht ~]# cat -v 2.txt 
+1
+2
+3
+[root@jfht ~]#
+问题思考
+相关资料
+【1】无用的天地 dos2unix和unix2dos命令使用 - [〓 脚本功略 〓] 
+【2】第二名 dos2unix命令
+【3】散人笔记 Linux中dos2unix的批量转换命令
