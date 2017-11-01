@@ -1,0 +1,105 @@
+“三金四银”又是一年一度的跳槽季，相信有不少Android程序员开始摩拳擦掌蠢蠢欲动了。然而，面对面试官的问题，你将如何回答？
+
+一、如何理解Activity，View，Window三者之间的关系？
+这个问题真的很不好回答。所以先比较恰当的比喻来形容下它们的关系，Activity像一个工匠（控制单元），Window像窗户（承载模型），View像窗花（显示视图）LayoutInflater像剪刀，Xml配置像窗花图纸。
+1：Activity构造的时候会初始化一个Window，准确的说是PhoneWindow。
+2：这个PhoneWindow有一个“ViewRoot”，这个“ViewRoot”是一个View或者说ViewGroup，是最初始的根视图。
+3：“ViewRoot”通过addView方法来一个个的添加View。比如TextView，Button等
+4：这些View的事件监听，是由WindowManagerService来接受消息，并且回调Activity函数。比如onClickListener，onKeyDown等。
+二、Activity的几种LaunchMode及使用场景
+1、standard 模式
+这是默认模式，每次激活Activity时都会创建Activity实例，并放入任务栈中。使用场景：大多数Activity。
+2、singleTop 模式
+如果在任务的栈顶正好存在该Activity的实例，就重用该实例( 会调用实例的 onNewIntent() )，否则就会创建新的实例并放入栈顶，即使栈中已经存在该Activity的实例，只要不在栈顶，都会创建新的实例。使用场景如新闻类或者阅读类App的内容页面。
+3、singleTask 模式
+如果在栈中已经有该Activity的实例，就重用该实例(会调用实例的 onNewIntent() )。重用时，会让该实例回到栈顶，因此在它上面的实例将会被移出栈。如果栈中不存在该实例，将会创建新的实例放入栈中。使用场景如浏览器的主界面。不管从多少个应用启动浏览器，只会启动主界面一次，其余情况都会走onNewIntent，并且会清空主界面上面的其他页面。
+4、singleInstance 模式
+在一个新栈中创建该Activity的实例，并让多个应用共享该栈中的该Activity实例。一旦该模式的Activity实例已经存在于某个栈中，任何应用再激活该Activity时都会重用该栈中的实例( 会调用实例的 onNewIntent() )。其效果相当于多个应用共享一个应用，不管谁激活该 Activity 都会进入同一个应用中。使用场景如闹铃提醒，将闹铃提醒与闹铃设置分离。singleInstance不要用于中间页面，如果用于中间页面，跳转会有问题，比如：A -> B (singleInstance) -> C，完全退出后，在此启动，首先打开的是B。
+三、Android中的动画有哪几类
+Android3.0之前有2种，3.0后有3种。
+FrameAnimation（逐帧动画）：将多张图片组合起来进行播放，类似于早期电影的工作原理，很多App的loading是采用这种方式。
+TweenAnimation（补间动画）：是对某个View进行一系列的动画的操作，包括淡入淡出（Alpha），缩放（Scale），平移（Translate），旋转（Rotate）四种模式。
+PropertyAnimation（属性动画）：属性动画不再仅仅是一种视觉效果了，而是一种不断地对值进行操作的机制，并将值赋到指定对象的指定属性上，可以是任意对象的任意属性。
+http://blog.csdn.net/yanbober/article/details/46481171
+四、请描述下Activity的生命周期
+这个问题关键是理解。有人曾遇到这个问题的变种问题，问onStart(),与onResume()有什么区别？如果面试官抛出这个问题，是不是有点措手不及。最近又有人遭遇了更变态的问题：什么情况下Activity走了onCreat()，而不走onStart()。
+五、请介绍下service生命周期
+这里要注意service有两种启动方式，startService()和bindService()
+
+六、View的绘制流程
+measure过程、layout过程、draw过程
+http://blog.csdn.net/yanbober/article/details/46128379/
+七、Android的四大组件是哪些，各自都有什么作用？
+Activity：Activity是Android程序与用户交互的窗口，是Android构造块中最基本的一种，它需要为保持各界面的状态，做很多持久化的事情，妥善管理生命周期以及一些跳转逻辑。
+service：后台服务于Activity，封装有一个完整的功能逻辑实现，接受上层指令，完成相关的事物，定义好需要接受的Intent提供同步和异步的接口。
+Content Provider：是Android提供的第三方应用数据的访问方案，可以派生Content Provider类，对外提供数据，可以像数据库一样进行选择排序，屏蔽内部数据的存储细节，向外提供统一的借口模型，大大简化上层应用，对数据的整合提供了更方便的途径。
+BroadCast Receiver：接受一种或者多种Intent作触发事件，接受相关消息，做一些简单处理，转换成一条Notification，统一了Android的事件广播模型。
+八、ListView的优化方案
+1、如果自定义适配器，那么在getView方法中要考虑方法传进来的参数contentView是否为null，如果为null就创建contentView并返回，如果不为null则直接使用。在这个方法中尽可能少创建view。
+2、给contentView设置tag（setTag（）），传入一个viewHolder对象，用于缓存要显示的数据，可以达到图像数据异步加载的效果。
+3、如果listview需要显示的item很多，就要考虑分页加载。
+九、请问Android中跨进程通讯有几种方式
+1：访问其他应用程序的Activity，如调用系统通话应用IntentcallIntent=newIntent(Intent.ACTION_CALL,Uri.parse("tel:12345678");startActivity(callIntent);
+2：Content Provider，如访问系统相册
+3：广播（Broadcast），如显示系统时间
+4：AIDL服务
+十、说说mvc模式的原理，它在android中的运用,android的官方建议应用程序的开发采用mvc模式。
+mvc是model,view,controller的缩写，mvc包含三个部分：
+1）模型（model）对象：是应用程序的主体部分，所有的业务逻辑都应该写在该层。
+2）视图（view）对象：是应用程序中负责生成用户界面的部分。也是在整个mvc架构中用户唯一可以看到的一层，接收用户的输入，显示处理结果。
+3）控制器（control）对象：是根据用户的输入，控制用户界面数据显示及更新model对象状态的部分，控制器更重要的一种导航功能，响应用户出发的相关事件，交给m层处理。
+android鼓励弱耦合和组件的重用，在android中mvc的具体体现如下：
+1)视图层（view）：一般采用xml文件进行界面的描述，使用的时候可以非常方便的引入，当然，如果你对android了解的比较的多了话，就一定可以想到在android中也可以使用JavaScript+html等的方式作为view层，当然这里需要进行java和javascript之间的通信，幸运的是，android提供了它们之间非常方便的通信实现。
+2)控制层（controller）：android的控制层的重任通常落在了众多的acitvity的肩上，这句话也就暗含了不要在acitivity中写代码，要通过activity交割model业务逻辑层处理，这样做的另外一个原因是android中的acitivity的响应时间是5s，如果耗时的操作放在这里，程序就很容易被回收掉。
+3)模型层（model）：对数据库的操作、对网络等的操作都应该在model里面处理，当然对业务计算等操作也是必须放在的该层的。
+十一、什么情况会导致Force Close ？如何避免？能否捕获导致其的异常？
+程序出现异常，比如nullpointer。如何避免：编写程序时逻辑连贯，思维缜密。能捕获异常，在logcat中能看到异常信息
+十二、Touch事件的传递机制publicbooleandispatchTouchEvent(MotionEventev); //用来分派eventpublicbooleanonInterceptTouchEvent(MotionEventev);//用来拦截eventpublicbooleanonTouchEvent(MotionEventev);//用来处理event
+其中Activity和View控件（TextView）拥有分派和处理事件方法，View容器（LinearLayout）具有分派，拦截，处理事件方法。这里也有个比喻：领导都会把任务向下分派，一旦下面的人把事情做不好，就不会再把后续的任务交给下面的人来做了，只能自己亲自做，如果自己也做不了，就只能告诉上级不能完成任务，上级又会重复他的过程。另外，领导都有权利拦截任务，对下级隐瞒该任务，而直接自己去做，如果做不成，也只能向上级报告不能完成任务。
+http://gold.xitu.io/entry/56af0ba0c24aa800547b60ea
+http://blog.csdn.net/morgan_xww/article/details/9372285
+十三、请说一下Android UI适配问题
+hongyang大神的方案：http://blog.csdn.net/lmj623565791/article/details/45460089
+十四、请介绍一下JAVA注解反射原理是什么
+参考：http://www.jianshu.com/p/3968ffabdf9d
+十五、请说下数据库优化问题
+参考：http://www.jianshu.com/p/3b4452fc1bbd
+十六、请介绍下ContentProvider是如何实现数据共享的
+一个程序可以通过实现一个Content provider的抽象接口将自己的数据完全暴露出去，而且Content providers是以类似数据库中表的方式将数据暴露。Content providers存储和检索数据，通过它可以让所有的应用程序访问到，这也是应用程序之间唯一共享数据的方法。
+要想使应用程序的数据公开化，可通过2种方法：创建一个属于你自己的Content provider或者将你的数据添加到一个已经存在的Content provider中，前提是有相同数据类型并且有写入Content provider的权限。
+如何通过一套标准及统一的接口获取其他应用程序暴露的数据？
+Android提供了ContentResolver，外界的程序可以通过ContentResolver接口访问ContentProvider提供的数据。
+十七、HybridJAVA 与JS交互
+参考：http://droidyue.com/blog/2014/09/20/interaction-between-java-and-javascript-in-android/
+十八、请介绍下Java GC原理
+参考：http://www.jianshu.com/p/d75a32ac5bed?
+十九、如何将一个Activity设置成窗口的样式。
+中配置：android :theme="@android:style/Theme.Dialog"
+另外android:theme="@android:style/Theme.Translucent" 是设置透明
+二十、JAVA注解反射原理问题
+二十一、什么是ANR 如何避免它？
+ANR：Application Not Responding。在Android中，活动管理器和窗口管理器这两个系统服务负责监视应用程序的响应，当用户操作的在5s内应用程序没能做出反应，BroadcastReceiver在10秒内没有执行完毕，就会出现应用程序无响应对话框，这既是ANR。
+避免方法：Activity应该在它的关键生命周期方法（如onCreate()和onResume()）里尽可能少的去做创建操作。潜在的耗时操作，例如网络或数据库操作，或者高耗时的计算如改变位图尺寸，应该在子线程里（或者异步方式）来完成。主线程应该为子线程提供一个Handler，以便完成时能够提交给主线程。
+二十二、设计模式
+参考：http://gold.xitu.io/entry/56ebb4ad5bbb50004c440972
+二十三、Android本身的api并未声明会抛出异常，则其在运行时有无可能抛出runtime异常，你遇到过吗？诺有的话会导致什么问题？是如何解决的？
+会，比如nullpointerException。我遇到过，比如textview.setText()时，textview没有初始化。会导致程序无法正常运行出现forceclose。打开控制台查看logcat信息找出异常信息并修改程序。
+二十四、RxJava
+http://gank.io/post/560e15be2dca930e00da1083?from=timeline&isappinstalled=0#toc_1
+二十五、Http Https
+http://www.jianshu.com/p/93fdebe5fef1
+二十六、java中如何引用本地语言
+可以用JNI（java native interface java 本地接口）接口 。
+二十七、Android内存泄露及管理
+http://gold.xitu.io/entry/56d64b9e816dfa005943a55c
+二十八、设计一套图片异步加载缓存方案
+http://www.cnblogs.com/zyw-205520/p/4997863.html
+http://blog.csdn.net/boyupeng/article/details/47127605
+二十九、Android 中有哪几种解析xml的类？官方推荐的是哪种？它们的原理是什么，区别在哪？
+答：XML解析主要有三种方式，SAX、DOM、PULL。常规在PC上开发我们使用Dom相对轻松些，但一些性能敏感的数据库或手机上还是主要采用SAX方式，SAX读取是单向的，优点:不占内存空间、解析属性方便，但缺点就是对于套嵌多个分支来说处理不是很方便。而DOM方式会把整个XML文件加载到内存中去，这里Android开发网提醒大家该方法在查找方面可以和XPath很好的结合如果数据量不是很大推荐使用，而PULL常常用在J2ME对于节点处理比较好，类似SAX方式，同样很节省内存，在J2ME中我们经常使用的KXML库来解析。
+三十、热修复的原理
+1：JavaSisst
+2：AspectJ
+3：Xposef
+http://mp.weixin.qq.com/s?__biz=MzA3Mjk1MjA4Nw==&mid=400452659&idx=1&sn=841b49b875ec3b307f261ed52a7d9c4e&scene=23&srcid=1119JWRt0adNwGxTHiyok460#rd
+约聘网，垂直于互联网行业的O2O求职招聘平台。专注于运营、推广、营销、SEO、SEM、BD、产品经理、技术开发等职位招聘。关注约聘网微信公众号yuepin51 获取最新最全面求职招聘信息，发布只属于您的微简历、微招聘。
