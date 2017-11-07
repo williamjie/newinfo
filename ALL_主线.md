@@ -101,5 +101,6 @@ http GET POST 区别
 消息一致性保证，消息分级；
 
 短信系统：选型golang redis做队列；（本地redis队列和远端redis队列做缓存）灾备考虑
-，
-，，
+
+读取p12文件命令
+keytool -list -v -keystore etj.p12 -storepass 123456 -storetype PKCS12
