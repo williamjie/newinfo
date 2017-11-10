@@ -31,7 +31,7 @@ IOS
 2.def  iterface
 
 ## C++
------------------
+
 ## java
 hashmap
 jvm垃圾回收；
@@ -54,6 +54,9 @@ jvm优化：常见内存溢出   堆 栈 垃圾回收
 
 String造成的内存泄漏
 内存泄漏是指，不再使用的对象占据内存不释放，导致可用内存不断减小，最终引起内存泄漏。在Java1.6中String.subString()方法就存在这样的问题。
+
+##golang
+def
 
 
 ## 机器linux性能调优：
