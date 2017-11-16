@@ -1,0 +1,58 @@
+#$cat SpeechMongoHandle.py 
+from pymongo import Connection
+import time
+import datetime
+
+# CTRL_A='\x01'
+# CTRL_B='\x02'
+
+CTRL_A='--'
+
+def getEveryDay(begin_date,end_date):
+    date_list = []
+    begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(end_date,"%Y-%m-%d")
+    while begin_date < end_date:
+        # date_str = begin_date.strftime("%Y-%m-%d")
+        mid_date = begin_date + datetime.timedelta(days=1)
+        tup = (str(begin_date),str(mid_date))
+        date_list.append(tup)
+        begin_date = mid_date
+    return date_list
+days = getEveryDay('2017-01-01','2017-01-02')
+
+
+# MongoDB Connect
+client = Connection('syslog-1',27017)
+db_name = 'service'
+db = client[db_name]
+collection = db.speech
+
+for day in days:
+    tmpArray0 = time.strptime(str(day[0]), "%Y-%m-%d %H:%M:%S")
+    tmpArray1 = time.strptime(str(day[1]), "%Y-%m-%d %H:%M:%S")
+    timestamp0 = int(time.mktime(tmpArray0)*1000)
+    timestamp1 = int(time.mktime(tmpArray1)*1000)
+    print day
+    print (timestamp0,timestamp1)
+
+    results = collection.find({"time":{'$gte':timestamp0,'$lt':timestamp1}})
+
+    for res in results:
+        keys = res.keys()
+        if "time" in keys:
+            unixtimestamp = str(int(res["time"]))
+            timetemp = time.localtime(int(unixtimestamp)/1000)
+            thedate = time.strftime("%Y-%m-%d %H:%M:%S", timetemp)
+        if "id" in keys:
+            sn = res["id"]
+        if "asr" in keys:
+            asr = res["asr"]
+        if "nlp" in keys:
+            nlp = res["nlp"]
+        if "domain" in keys:
+            domain = res["domain"]
+        if "intent" in keys:
+            intent = res["intent"]
+
+        print thedate + CTRL_A + sn + CTRL_A + asr + CTRL_A + nlp + CTRL_A + domain + CTRL_A + intent
