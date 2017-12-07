@@ -43,15 +43,17 @@ IOS
 ## C++
 
 ## java
-hashmap
-jvm垃圾回收；
-jvm性能调优
-java spring框架（ioc aop）
-java 代理  （1.静态代理 2.动态代理 3.Cglib代理）
-以及反射
-synchronized 关键词
-hashmap 结构
-jvm优化：常见内存溢出   堆 栈 垃圾回收
+##### hashmap
+##### jvm垃圾回收；
+##### jvm性能调优
+##### java spring框架（ioc aop） 
+##### java spring boot 框架可以直接mvn test package    java -jar xxx.jar 执行；web服务器超级方便；
+##### java 代理  （1.静态代理 2.动态代理 3.Cglib代理）
+##### 以及反射
+##### synchronized 关键词
+##### hashmap 结构
+##### jvm优化：常见内存溢出   堆 栈 垃圾回收
+##### 进程和线程区别异同
 
 根据垃圾回收机制的不同，java堆有可能拥有不同的结构，常见的java堆分为新生代和老年代，目前还有永久代。其中新生代存放刚创建的对象及年龄不大的对象，老年带存放着在新生代中经历过多次回收后还存在的对象。
 对象晋升过程：
