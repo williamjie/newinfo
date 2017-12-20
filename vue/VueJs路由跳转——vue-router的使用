@@ -1,0 +1,149 @@
+VueJs路由跳转——vue-router的使用
+96  SCQ000 关注
+2016.09.10 10:04* 字数 771 阅读 171686评论 14喜欢 38
+对于单页应用，官方提供了vue-router进行路由跳转的处理，本篇主要也是基于其官方文档写作而成。
+
+安装
+
+基于传统，我更喜欢采用npm包的形式进行安装。
+
+npm install vue-router --save
+当然，官方采用了多种方式进行安装，包括bower,cdn等。
+
+基本用法
+
+在HTML文档中使用，只需要利用v-link这个directive就行了，如：
+
+<a v-link="{path: '/view-a'}">Go to view-a</a>
+​ ps: v-link还支持activeClass用于指定链接活跃时的css样式。replace属性为true的时候可以让链接在跳转的时候不会留下历史记录。
+
+而在ES5中使用，需要先创建路由器实例，随后传入配置参数即可，如：
+
+var router = new VueRouter();
+
+router.map({
+  '/view-a': {
+    component: ViewA
+  },
+  '/view-b': {
+    component: ViewB
+  }
+});
+
+router.start(App, '#app');
+以上定义的路由器规则，采用映射到一个组件的方式，最后启动应用的时候，挂载到#app的元素上。
+
+当然，如果你想采用ES6的语法进行配置，也是很容易做到的:
+
+先建立一个路由器模块，主要进行配置和绑定相关信息
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+
+Vue.use(VueRouter);
+
+const router = new VueRouter(); //这里可以带有路由器的配置参数
+
+router.map({
+  '/view-a': {
+    component: ViewA
+  },
+  '/view-b': {
+    component: ViewB
+  }
+});
+
+export default router; //将路由器导出
+在app.js入口启动文件中启用该路由器
+import Vue from 'vue';
+import router from './routers';
+
+router.start(App, '#app');
+嵌套路由
+
+如果想要使用嵌套路由，如/a/b则可以更新路由配置
+
+router.map({
+  '/a': {
+    component: A,
+    subRoutes: {
+      '/b': {
+        component: B
+      }
+    }
+  }
+});
+同时，你需要在组件A和组件B中使用<router-view>，如：
+
+<div id="app">
+  <router-view></router-view>
+</div>
+组件A中，使用嵌套的外链
+
+<div id="A">
+  <h1>
+    This is component A
+  </h1>
+  <router-view></router-view>
+</div>
+路由器将自动渲染对应的组件以及更新路由信息。
+
+其中<router-view>可以传递props，支持v-ref,同时也可以使用v-transition和transition-mode来获得场景切换效果，被渲染的组件将注册到父级组件的this.$对象上。
+
+路由对象和路由匹配
+
+路由对象，即$router会被注入每个组件中，可以利用它进行一些信息的获取。如
+
+属性	说明
+$route.path	当前路由对象的路径，如'/view/a'
+$rotue.params	关于动态片段（如/user/:username)的键值对信息,如{username: 'paolino'}
+$route.query	请求参数，如/foo?user=1获取到query.user = 1
+$route.router	所属路由器以及所属组件信息
+$route.matched	数组，包含当前匹配的路径中所包含的所有片段所对应的配置参数对象。
+$route.name	当前路径名字
+当然，你也可以在自己定义路由规则（map)的时候自定义字段，用以特殊目的。
+
+全匹配片段的语法是使用通配符* 如，/user/*any就会匹配到任何以/user为开头的路径，并给params对象中赋值一个属性any
+
+动态片段的语法就是使用:作为标志。
+
+使用路径名称
+
+在定义路径规则的时候，如果你给它提供了一个name属性，则可以在后续使用这条路径规则的时候，直接引用。
+
+router.map({
+  '/user/:userId': {
+    name: 'user',
+    component: {...}
+  }
+});
+在v-link中使用
+
+<a v-link="{name: 'user', params: {userId: 1}">This is a user whose id is 1</a>
+还可以使用router.go()
+
+router.go({name: 'user', params: {userId: 1}});
+最终都会匹配到/user/1这条路径上
+
+路由选项
+
+路由选项名	默认值	作用
+hashbang	true	将路径格式化为#!开头
+history	false	启用HTML5 history模式，可以使用pushState和replaceState来管理记录
+abstract	false	使用一个不依赖于浏览器的浏览历史虚拟管理后端。
+transitionOnLoad	false	初次加载是否启用场景切换
+saveScrollPosition	false	在启用html5 history模式的时候生效，用于后退操作的时候记住之前的滚动条位置
+linkActiveClass	"v-link-active"	链接被点击时候需要添加到v-link元素上的class类,默认为active
+如，我想采用一个有路径格式化并启用Html5 history功能的路由器，则可以在路由器初始化的时候，指定这些参数：
+
+var router = new VueRouter({
+  hashbang: true,
+  history: true
+});
+这里只是做了一些简单的介绍，更多选项其参考这里。
+
+最后，更多高级用法请参考官方文档。
+
+参考文档
+
+官方文档
+
