@@ -1,8 +1,5 @@
 Redis中5种数据结构的使用场景介绍
 
-redis  hufeng 2015年11月18日发布
-赞  |   2收藏  |  30
-5.6k 次浏览
 这篇文章主要介绍了Redis中5种数据结构的使用场景介绍,本文对Redis中的5种数据类型String、Hash、List、Set、Sorted Set做了讲解,需要的朋友可以参考下
 
 ## 一、redis 数据结构使用场景
