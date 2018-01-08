@@ -188,21 +188,21 @@ TIME
 了解 WATCH
 使用 WATCH 实现 ZPOP
 Redis 脚本和事务
-发布与订阅（pub/sub）
+### 发布与订阅（pub/sub）
 信息的格式
 订阅模式
 通过频道和模式接收同一条信息
 订阅总数
 编程示例
 客户端库实现提示
-复制（Replication）
+### 复制（Replication）
 复制功能的运作原理
 部分重同步
 配置
 只读从服务器
 从服务器相关配置
 主服务器只在有至少 N 个从服务器的情况下，才执行写操作
-通信协议（protocol）
+### 通信协议（protocol）
 网络层
 请求
 新版统一请求协议
@@ -216,7 +216,7 @@ Redis 脚本和事务
 多命令和流水线
 内联命令
 高性能 Redis 协议分析器
-持久化（persistence）
+### 持久化（persistence）
 Redis 持久化
 RDB 的优点
 RDB 的缺点
@@ -234,7 +234,7 @@ AOF 的运作方式
 RDB 和 AOF 之间的相互作用
 备份 Redis 数据
 容灾备份
-Sentinel
+### Sentinel
 获取 Sentinel
 启动 Sentinel
 配置 Sentinel
@@ -246,7 +246,7 @@ Sentinel API
 TILT 模式
 处理 -BUSY 状态
 Sentinel 的客户端实现
-集群教程
+### 集群教程
 集群简介
 Redis 集群数据共享
 Redis 集群中的主从复制
