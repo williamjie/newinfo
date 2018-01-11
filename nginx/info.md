@@ -1,4 +1,9 @@
-Nginx Log日志统计分析常用命令
+# Nginx Log日志统计分析常用命令
+
+## 统计错误码
+awk '{print $9}' log.api.com.conf.log | sort -n |uniq -c | sort -rn | head -n 100
+
+grep "/jersey/rest/sms/send" log.api.com.conf.log | awk '{print $18}'  | sort -n |uniq -c | sort -rn | head -
 
 IP相关统计
 统计IP访问量（独立ip访问数量）
