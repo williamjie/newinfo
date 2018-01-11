@@ -3,8 +3,9 @@
 ## 统计错误码
 awk '{print $9}' log.api.com.conf.log | sort -n |uniq -c | sort -rn | head -n 100
 
-grep "/jersey/rest/sms/send" log.api.com.conf.log | awk '{print $18}'  | sort -n |uniq -c | sort -rn | head -
+grep "/jersey/rest/sms/send HTTP/1.1" log.api.com.conf.log | awk '{print $18}' | sort -n |uniq -c | sort -rn | head -100
 
+# 其他
 IP相关统计
 统计IP访问量（独立ip访问数量）
 
