@@ -53,7 +53,7 @@ IOS
 【golang】
 1.hashmap结构
 2.def  iterface
-3.channel使用 
+3.channel类型 <- 接收以及发送；阻塞；Range；select；timeout；ticker（定时器）；close
 
 ## C++
 
