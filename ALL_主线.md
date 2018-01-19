@@ -25,7 +25,14 @@ A岗 B岗
 # 前端
 ## JS
 ### vue 界面button 等可以使用原生功能
-### vue 优点以及缺点
+### vue 优点以及缺点：vue是MVVM框架
+MVX框架模式：MVC+MVP+MVVM 
+MVC：Model(模型)+View(视图)+controller(控制器)，主要是基于分层的目的，让彼此的职责分开
+MVP：是从MVC模式演变而来的，都是通过Controller/Presenter负责逻辑的处理+Model提供数据+View负责显示。在MVP中，Presenter完全把View和Model进行了分离，主要的程序逻辑在Presenter里实现
+MVVM：MVVM是把MVC里的Controller和MVP里的Presenter改成了ViewModel。Model+View+ViewModel。
+MVVM模式的框架有：AngularJS+Vue.js和Knockout+Ember.js后两种知名度较低以及是早起的框架模式。
+
+
 
 ###### vue <div> 模块编辑，界面显示，通过初始化全部隐藏；部分全部显示来展示。
 ###### vue webpack 打包原理
