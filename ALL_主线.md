@@ -17,7 +17,8 @@ A岗 B岗
 高性能是如何实现，瓶颈在哪里
 
 ## 工具使用
-### redis
+### redis 
+string list  hash set sortset
 ### mongdb
 ### grafna+statd
 ### phxqueue分布式消息队列（研究下）
