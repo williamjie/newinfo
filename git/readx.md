@@ -1,5 +1,28 @@
+# 项目目录切换
+
+由于项目的需要，需要在某一版开源代码上测试算法。为了方便切换branch和测试之前的commit，所以查询了一下Git项目迁移的方式。记录一下：
+
+这里以x265为例（git地址：https://github.com/videolan/x265.git）：
+
+先将所需要的开源项目裸版本库clone到本地
+
+git clone --bare https://github.com/videolan/x265.git
+1
+然后新建你自己库，例如可以在OSChina上建立了一个私有库(http://git.oschina.net/username/x265)。
+
+cd x265.git
+git push --mirror http://git.oschina.net/username/x265
+1
+2
+建立完成后，删除x265.git的文件夹，然后直接git clone你自己的地址，就能看到移植成功后的工程了
+
+cd ..
+rm -r x265.git
+git clone http://git.oschina.net/username/x265
 
 
+
+# 项目url切换
 git remote show origin
 
 git remote remove origin
