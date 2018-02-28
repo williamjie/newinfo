@@ -1,0 +1,11 @@
+官方说单例能处理key：2.5亿个，参考链接:https://redis.io/topics/faq，以下是原话：
+
+What is the maximum number of keys a single Redis instance can hold? and what the max number of elements in a Hash, List, Set, Sorted Set?
+Redis can handle up to 2^32 keys, and was tested in practice to handle at least 250 million keys per instance.
+Every hash, list, set, and sorted set, can hold 2^32 elements.
+In other words your limit is likely the available memory in your system
+
+
+
+
+and was tested in practice to handle at least 250 million keys per instance.
