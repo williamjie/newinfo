@@ -1,3 +1,8 @@
+subtext lime 
+mac竖排选择
+鼠标左键＋Option
+－或者鼠标中键
+－增加选择：Command，减少选择：Command+Shift
 
 ## 业务快速迭代
 业务稳定性
