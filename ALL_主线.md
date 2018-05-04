@@ -4,6 +4,16 @@ mac竖排选择
 －或者鼠标中键
 －增加选择：Command，减少选择：Command+Shift
 
+## 体系说明
+点：
+线：
+面：
+体：
+快速发现解决问题能力：
+创新解决问题能力：
+推广技术方案能力：
+
+
 ## 业务快速迭代
 业务稳定性
 业务灾备（快速恢复）
@@ -49,6 +59,9 @@ MVVM模式的框架有：AngularJS+Vue.js和Knockout+Ember.js后两种知名度�
 
 ##### css样式
 
+## 技巧
+# 非实时按秒统计QPS
+cat access.log | awk -F '[' '{print $2}' | awk '{print $1}' | sort | uniq -c |sort -k1,1nr
 
 
 ## 客户端
