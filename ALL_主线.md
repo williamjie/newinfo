@@ -59,10 +59,6 @@ MVVM模式的框架有：AngularJS+Vue.js和Knockout+Ember.js后两种知名度�
 
 ##### css样式
 
-## 技巧
-# 非实时按秒统计QPS
-cat access.log | awk -F '[' '{print $2}' | awk '{print $1}' | sort | uniq -c |sort -k1,1nr
-
 
 ## 客户端
 安卓
@@ -106,6 +102,11 @@ String造成的内存泄漏
 top
 iostat
 free
+
+### 技巧
+非实时按秒统计QPS
+cat access.log | awk -F '[' '{print $2}' | awk '{print $1}' | sort | uniq -c |sort -k1,1nr
+
 
 
 ## 存储
