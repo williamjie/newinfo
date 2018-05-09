@@ -13,6 +13,12 @@ mac竖排选择
 ##### 创新解决问题能力：
 ##### 推广技术方案能力：
 
+## 知识点更新
+##### 后端
+golang java spring boot Spring cloud
+##### 前端 
+vue react
+
 
 ## 业务快速迭代
 业务稳定性
