@@ -4,6 +4,8 @@ mac竖排选择
 －或者鼠标中键
 －增加选择：Command，减少选择：Command+Shift
 
+Idea全局搜索：Command + shift + F 
+
 ## 体系说明
 ##### 点：技术点，比如tcp黏连问题  tcp三次握手，4次分手
 ##### 线：
