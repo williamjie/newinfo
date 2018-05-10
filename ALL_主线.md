@@ -18,7 +18,8 @@ mac竖排选择
 ######## golang 
 ######## java 
 ######## spring boot 
-Spring JPA :
+Spring JPA : JPA框架中支持大数据集、事务、并发等容器级事务，这使得 JPA 超越了简单持久化框架的局限，在企业应用发挥更大的作用。
+
 ######## Spring cloud
 ##### 前端 
 vue react
