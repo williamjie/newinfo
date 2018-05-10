@@ -50,7 +50,8 @@ mac竖排选择
 ##### 后端
 ######## golang 
 ######## java 
-######## spring boot 
+######## spring boot ：
+1.自动化问题，版本问题
 Spring JPA : JPA框架中支持大数据集、事务、并发等容器级事务，这使得 JPA 超越了简单持久化框架的局限，在企业应用发挥更大的作用。
 
 ######## Spring cloud
