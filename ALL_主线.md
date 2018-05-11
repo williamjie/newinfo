@@ -6,6 +6,11 @@ mac竖排选择
 
 Idea全局搜索：Command + shift + F 
 
+docker run -itd --restart=always --net=host --name="nginx" \
+	 -v /opt/nginx/logs:/var/log/nginx \
+	 -v /opt/nginx/nginx.conf:/etc/nginx/nginx.conf \
+	 docker.gf.com.cn/gf-nginx-lua
+
 ## 体系说明
 ##### 点：技术点，比如tcp黏连问题  tcp三次握手，4次分手
 ##### 线：
