@@ -10,6 +10,11 @@ docker run -itd --restart=always --net=host --name="nginx" \
 	 -v /opt/nginx/logs:/var/log/nginx \
 	 -v /opt/nginx/nginx.conf:/etc/nginx/nginx.conf \
 	 docker.gf.com.cn/gf-nginx-lua
+	 
+oracle DB数据访问必须添加
+root@ubuntu-server-14:/home/dockerimages# cat /etc/resolv.conf
+nameserver 10.2.66.66
+nameserver 10.35.88.77	 
 
 ## 体系说明
 ##### 点：技术点，比如tcp黏连问题  tcp三次握手，4次分手
