@@ -4,6 +4,8 @@ mac竖排选择
 －或者鼠标中键
 －增加选择：Command，减少选择：Command+Shift
 
+strace -ttT -f -p 10091 -o xxx.log
+
 Idea全局搜索：Command + shift + F 
 
 docker run -itd --restart=always --net=host --name="nginx" \
