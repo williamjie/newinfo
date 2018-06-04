@@ -1,3 +1,9 @@
+| Name | Academy | score | 
+| - | :-: | -: | 
+| Harry Potter | Gryffindor| 90 | 
+| Hermione Granger | Gryffindor | 100 | 
+| Draco Malfoy | Slytherin | 90 |
+
 功能        						| 读写分离版本    |  分库版本 
 - | :-: | -:
 单进程无锁提升单个实例效率           | 支持      		|   支持    
