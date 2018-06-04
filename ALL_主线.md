@@ -1,8 +1,8 @@
-| Name | Academy | score | 
-| - | :-: | -: | 
-| Harry Potter | Gryffindor| 90 | 
-| Hermione Granger | Gryffindor | 100 | 
-| Draco Malfoy | Slytherin | 90 |
+Name | Academy | score 
+- | :-: | -: 
+Harry Potter | Gryffindor| 90 
+Hermione Granger | Gryffindor | 100 
+Draco Malfoy | Slytherin | 90
 
 功能        						| 读写分离版本    |  分库版本 
 - | :-: | -:
