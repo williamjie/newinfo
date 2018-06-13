@@ -22,7 +22,7 @@
 |支持状态监控       				| 不支持      	|   支持    |
 |支持tcp stream流式       			| 不支持     		|   支持    |
 
-
+linxu 查找历史命令：使用快捷键：ctrl+r  mac:control+r
 subtext lime 
 mac竖排选择
 鼠标左键＋Option
